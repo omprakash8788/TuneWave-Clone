@@ -12,32 +12,58 @@ import { BsFillSpeakerFill } from "react-icons/bs";
 import { FaVolumeHigh } from "react-icons/fa6";
 import { CgMiniPlayer } from "react-icons/cg";
 import { TbZoomScan } from "react-icons/tb";
+import { useContext } from "react";
+import { FaRegPauseCircle } from "react-icons/fa";
+import { PlayerContext } from "../context/PlayerContext";
+
+
 const Player = () => {
+  const {seekBar,seekSong, seekBg,play, playStatus, pause, track, time, next, previous }=useContext(PlayerContext)
+  // console.log(seekBar);
+  // console.log(seekBg);
+  // seekBg,
+  // seekBar,
+  // seekSong
+
+  // play,
+  // pause,
+  // track,
+  // setTrack,
+  // playStatus,
+  // setPlayStatus,
+  // time,
+  // setTime
+  console.log(track);
+  
+  
   return (
     <div className="h-[10%] bg-[purple] flex justify-between items-center text-white px-4">
       <div className="hidden lg:flex items-center gap-4">
-        <img className="w-12" src={songsData[0].image} alt="image-picture" />
+        <img className="w-12" src={track.image} alt="image-picture" />
         <div>
-          <p>{songsData[0].name}</p>
+          <p>{track.name}</p>
 
-          <p>{songsData[0].desc.slice(0, 12)}</p>
+          <p>{track.desc.slice(0, 12)}</p>
         </div>
       </div>
       <div className="flex flex-col items-center gap-1 m-auto">
         <div className="flex gap-4">
           {/* <img src={assets.shuffle_icon} alt="" /> */}
           <FaShuffle className="w-6 h-6 cursor-pointer" />
-          <GrChapterPrevious className="w-6 h-6 cursor-pointer" />
-          <FaPlayCircle className="w-6 h-6 cursor-pointer" />
-          <GrChapterNext className="w-6 h-6 cursor-pointer" />
+          <GrChapterPrevious onClick={previous} className="w-6 h-6 cursor-pointer hover:text-[red]" />
+          {
+            playStatus? <FaRegPauseCircle onClick={pause} className="w-6 h-6 cursor-pointer hover:text-[#0af306]" /> :
+          <FaPlayCircle onClick={play} className="w-6 h-6 cursor-pointer" />
+          }
+          <GrChapterNext onClick={next} className="w-6 h-6 cursor-pointer hover:text-[red]" />
           <RiLoopRightFill className="w-6 h-6 cursor-pointer" />
         </div>
         <div className="flex items-center gap-5">
-          <p>2:09</p>
-          <div className="w-[60vw] max-w-[500px] bg-gray-300 rounded-full cursor-pointer">
-            <hr className="h-1 border-none w-0 bg-green-800 rounded-full" />
+          <p>{time.currentTime.minute}:{time.currentTime.second}</p>
+          <div ref={seekBg} onClick={seekSong} className="w-[60vw] max-w-[500px] bg-gray-300 rounded-full cursor-pointer">
+            <hr ref={seekBar} className="h-1 border-none w-0 bg-green-800 rounded-full" />
           </div>
-          <p>3:55</p>
+          <p>{time.totalTime.minute}:{time.totalTime.second}</p>
         </div>
       </div>
       {/* Third part */}
