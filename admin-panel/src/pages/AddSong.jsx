@@ -1,15 +1,65 @@
+import { useState } from "react";
 import { assets } from "../assets/assets";
+import axios from 'axios';
+import {url} from "../App";
+import { toast } from "react-toastify";
 
 const AddSong = () => {
-  return (
-    <form className="flex flex-col items-start gap-8 text-gray-600">
+  const [image, setImage]=useState(false);
+  const [song, setSong]=useState(false)
+  const [name, setName]=useState("");
+  const [desc, setDesc]=useState("");
+  const [album, setAlbum]=useState("none");
+  const [loading, setLoading]=useState(false);
+  // const [albumData, setAlbumData]=useState([]);
+
+
+  const onSubmitHandler=async(e)=>{
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const formData= new FormData();
+      formData.append("name", name);
+      formData.append("desc", desc);
+      formData.append("image",image);
+      formData.append("audio",song);
+      formData.append("album", album);
+
+
+      const response = await axios.post(`${url}/api/song/add`, formData)
+         if(response.data.success){
+          toast.success("Song Added");
+          setName("");
+          setDesc("");
+          setAlbum("None");
+          setImage(false);
+          setSong(false);
+         }  
+         else{
+          toast.error("Something went wrong")
+         }
+      
+    } catch (error) {
+      console.log(error);
+      toast.error("Error Occured")
+      
+      
+      
+    }
+    setLoading(false)
+  }
+
+  return loading ? <div className="grid place-items-center min-h-[80vh]">
+     <div className="w-16 h-16 place-self-center border-4 border-gray-400 border-t-green-800 rounded-full animate-ping"></div>
+  </div> : (
+    <form onSubmit={onSubmitHandler} className="flex flex-col items-start gap-8 text-gray-600">
       <div className="flex gap-8">
         <div className="flex flex-col gap-4">
           <p>Upload Song</p>
-          <input type="file" id="song" accept="audio/*" hidden />
+          <input onChange={(e)=>setSong(e.target.files[0])} type="file" id="song" accept="audio/*" hidden />
           <label htmlFor="song">
             <img
-              src={assets.upload_song}
+              src={song?assets.upload_added : assets.upload_song}
               alt="song"
               className="w-24 cursor-pointer"
             />
@@ -18,10 +68,10 @@ const AddSong = () => {
 
         <div className="flex flex-col gap-2.5">
           <p>Upload Image</p>
-          <input type="file" id="image" accept="image/*" hidden />
+          <input onChange={(e)=>setImage(e.target.files[0])} type="file" id="image" accept="image/*" hidden />
           <label htmlFor="image">
             <img
-              src={assets.upload_area}
+              src={image ? URL.createObjectURL(image) : assets.upload_area}
               alt="image"
               className="w-24 cursor-pointer"
             />
@@ -31,6 +81,8 @@ const AddSong = () => {
       <div className="flex flex-col gap-2.5">
         <p>Song Name</p>
         <input
+         onChange={(e)=>setName(e.target.value)}
+         value={name}
           type="text"
           className="bg-transparent outline-green-600 border-2 border-gray-400 p-2 lg:w-[400px] w-full"
           placeholder="Type here"
@@ -40,6 +92,8 @@ const AddSong = () => {
       <div className="flex flex-col gap-2.5">
         <p>Song Description</p>
         <input
+        onChange={(e)=>setDesc(e.target.value)}
+        value={desc}
           type="text"
           className="bg-transparent outline-green-600 border-2 border-gray-400 p-2 lg:w-[400px] w-full"
           placeholder="Type here"
@@ -48,7 +102,9 @@ const AddSong = () => {
       </div>
       <div className="flex flex-col gap-2.5">
         <p>Album</p>
-        <select className="bg-transparent outline-green-600 border-2 border-gray-400 p-2 w-[150px]">
+        <select onChange={(e)=>setAlbum(e.target.value)} 
+        defaultValue={album}
+        className="bg-transparent outline-green-600 border-2 border-gray-400 p-2 w-[150px]">
           <option value="none">None</option>
         </select>
       </div>
